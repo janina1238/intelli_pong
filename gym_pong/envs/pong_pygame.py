@@ -76,6 +76,10 @@ class Ball:
         self.dx, self.dy = self.direction
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+        self.scoreA = 0
+        self.scoreB = 0
+        self.reward_flag = 0
+
     # draw ball
     def draw(self):
         rect = pygame.draw.rect(self._render, WHITE, self.rect)
@@ -91,22 +95,25 @@ class Ball:
         elif self.rect.y > 500 - self.height:
             self.dy *= -1
         elif self.rect.x > 700 - self.width:
+            self.scoreA += 1
+            self.reward_flag = 1
             self.dx = -self.velocity
         elif self.rect.x < 25 - self.width:
+            self.scoreB += 1
+            self.reward_flag = 2
             self.dx = self.velocity
 
     def check_collision(self, paddle_a, paddle_b):
 
         # If ball bounces of paddle
         if self.rect.colliderect(paddle_a.draw()):
-            print("collision paddle a")
+            #print("collision paddle a")
             self.dx = self.velocity
             # self.dy = self.velocity
         if self.rect.colliderect(paddle_b.draw()):
-            print("collision paddle b")
+            #print("collision paddle b")
             self.dx = -self.velocity
             # self.dy = self.velocity
-
 
 class PongPygame:
 
@@ -131,8 +138,8 @@ class PongPygame:
 
         # set score
         self.fontObj = pygame.font.Font('freesansbold.ttf', 32)
-        self.score_left = self.fontObj.render('0', True, WHITE)
-        self.score_right = self.fontObj.render('0', True, WHITE)
+
+        # self.reward = 0
 
     # set action for the left paddle
     def action(self, action):
@@ -144,6 +151,21 @@ class PongPygame:
         self.ball.update()
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
+        # self.ball.score()
+
+    def reward(self):
+        reward = 0
+        # point for the agent -> reward +1
+        if self.ball.reward_flag == 1:
+            reward = 1
+            self.ball.reward_flag = 0
+            return reward
+        # point for the enemy -> reward -1
+        if self.ball.reward_flag == 2:
+            reward = -1
+            self.ball.reward_flag = 0
+            return reward
+        return reward
 
     def view(self):
         # draw game
@@ -177,10 +199,16 @@ class PongPygame:
         # draw ball
         self.ball.draw()
 
+        # set score
+        score_left = self.fontObj.render(str(self.ball.scoreA), True, WHITE)
+        score_right = self.fontObj.render(str(self.ball.scoreB), True, WHITE)
+
         # display score
-        self.screen.blit(self.score_left, (170, 10))  # left score
-        self.screen.blit(self.score_right, (525, 10))  # right score
+        self.screen.blit(score_left, (170, 10))  # left score
+        self.screen.blit(score_right, (525, 10))  # right score
 
         self.paddle_b.animate()
+
+        # print(self.reward())
 
         pygame.display.update()
