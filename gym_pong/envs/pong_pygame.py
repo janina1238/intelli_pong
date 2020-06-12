@@ -137,8 +137,6 @@ class PongPygame:
         # set score
         self.fontObj = pygame.font.Font('freesansbold.ttf', 32)
 
-        # self.reward = 0
-
     # set action for the left paddle
     def action(self, action):
         if action == 0:
@@ -149,7 +147,6 @@ class PongPygame:
         self.ball.update()
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
-        # self.ball.score()
 
     def reward(self):
         reward = 0
