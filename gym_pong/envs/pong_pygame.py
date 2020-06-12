@@ -107,6 +107,7 @@ class Ball:
             self.dx = -self.velocity
             # self.dy = self.velocity
 
+
 class PongPygame:
 
     def __init__(self):
