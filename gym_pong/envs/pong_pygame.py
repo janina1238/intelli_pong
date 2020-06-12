@@ -109,11 +109,9 @@ class Ball:
         if self.rect.colliderect(paddle_a.draw()):
             #print("collision paddle a")
             self.dx = self.velocity
-            # self.dy = self.velocity
         if self.rect.colliderect(paddle_b.draw()):
             #print("collision paddle b")
             self.dx = -self.velocity
-            # self.dy = self.velocity
 
 class PongPygame:
 
@@ -208,7 +206,5 @@ class PongPygame:
         self.screen.blit(score_right, (525, 10))  # right score
 
         self.paddle_b.animate()
-
-        # print(self.reward())
 
         pygame.display.update()
