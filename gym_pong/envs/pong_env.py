@@ -9,11 +9,18 @@ class PygameEnv(gym.Env):
         self.ponggame = PongPygame()
         self.action_space = spaces.Discrete(3)
 
+    def reset(self):
+        del self.ponggame
+        self.ponggame = PongPygame()
+        obs = self.ponggame.observe()
+        return obs
+
     def step(self, action):
         self.ponggame.action(action)
         reward = self.ponggame.reward()
-
-        return reward
+        obs = self.ponggame.observe()
+        done = self.ponggame.is_done()
+        return obs, reward, done, {}
 
     def render(self, mode='human'):
         self.ponggame.view()

@@ -97,14 +97,13 @@ class Ball:
         elif self.rect.x > 700 - self.width:
             self.scoreA += 1
             self.reward_flag = 1
-            self.dx = -self.velocity
+            self.dx *= -1
         elif self.rect.x < 25 - self.width:
             self.scoreB += 1
             self.reward_flag = 2
-            self.dx = self.velocity
+            self.dx *= -1
 
     def check_collision(self, paddle_a, paddle_b):
-
         # If ball bounces of paddle
         if self.rect.colliderect(paddle_a.draw()):
             #print("collision paddle a")
@@ -137,12 +136,15 @@ class PongPygame:
         # set score
         self.fontObj = pygame.font.Font('freesansbold.ttf', 32)
 
+        self.array_2d = np.zeros([2, 2])
+
     # set action for the left paddle
     def action(self, action):
         if action == 0:
             self.paddle_a.y -= self.paddle_a.velocity  # move up
         if action == 1:
             self.paddle_a.y += self.paddle_a.velocity  # move down
+        # action == 2, don't move
 
         self.ball.update()
         self.paddle_a.update()
@@ -161,6 +163,26 @@ class PongPygame:
             self.ball.reward_flag = 0
             return reward
         return reward
+
+    def is_done(self):
+        # if one of the players reach 10 points
+        if self.ball.scoreA == 10 or self.ball.scoreB == 10:
+            return True
+        return False
+
+    def observe(self):
+        x = self.ball.rect.x
+        y = self.ball.rect.y
+
+        new_frame = [x, y]  # set the current x and y position of the ball
+        prev_frame = self.array_2d[0]  # move the current frame to previous frame
+        self.array_2d[1] = prev_frame  # set previous frame in pos 1
+        self.array_2d[0] = new_frame  # set current frame in pos 0
+
+        # subtract the previous frame from the current one so we are only processing on changes in the game
+        if 0 not in self.array_2d[1]:
+            state = self.array_2d[0] - self.array_2d[1]
+            return state
 
     def view(self):
         # draw game
@@ -203,5 +225,7 @@ class PongPygame:
         self.screen.blit(score_right, (525, 10))  # right score
 
         self.paddle_b.animate()
+
+        self.observe()
 
         pygame.display.update()
