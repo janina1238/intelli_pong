@@ -11,7 +11,6 @@ FPS = 60
 class Paddle:
 
     def __init__(self, pos, size, _render=None):
-        # self.vector = self.vector / np.linalg.norm(self.vector) * self.speed
         self.pos = pos  # position of the paddle on the x and y axes
         self.size = size  # size of the paddle, width and height
 
@@ -20,8 +19,6 @@ class Paddle:
 
         self.width = self.size[0]  # width of the paddle
         self.height = self.size[1]  # height of the paddle
-
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         self._render = _render  # surface
         self.velocity = 10
@@ -106,11 +103,10 @@ class Ball:
     def check_collision(self, paddle_a, paddle_b):
         # If ball bounces of paddle
         if self.rect.colliderect(paddle_a.draw()):
-            #print("collision paddle a")
             self.dx = self.velocity
         if self.rect.colliderect(paddle_b.draw()):
-            #print("collision paddle b")
             self.dx = -self.velocity
+
 
 class PongPygame:
 
@@ -127,16 +123,9 @@ class PongPygame:
 
         self.ball = Ball((337.5, random.randint(100, 400)), (25, 25), self.screen)  # ball object
 
-        self.x_a = self.paddle_a.x
-        self.y_a = self.paddle_a.y
+        self.fontObj = pygame.font.Font('freesansbold.ttf', 32)  # set score
 
-        self.x_b = self.paddle_b.x
-        self.y_b = self.paddle_b.y
-
-        # set score
-        self.fontObj = pygame.font.Font('freesansbold.ttf', 32)
-
-        self.array_2d = np.zeros([2, 2])
+        self.state_array = np.zeros([2, 2])
 
     # set action for the left paddle
     def action(self, action):
@@ -165,23 +154,25 @@ class PongPygame:
         return reward
 
     def is_done(self):
+        done = False
         # if one of the players reach 10 points
         if self.ball.scoreA == 10 or self.ball.scoreB == 10:
-            return True
-        return False
+            done = True
+        return done
 
     def observe(self):
         x = self.ball.rect.x
         y = self.ball.rect.y
 
         new_frame = [x, y]  # set the current x and y position of the ball
-        prev_frame = self.array_2d[0]  # move the current frame to previous frame
-        self.array_2d[1] = prev_frame  # set previous frame in pos 1
-        self.array_2d[0] = new_frame  # set current frame in pos 0
+        prev_frame = self.state_array[0]  # move the current frame to previous frame
+        self.state_array[1] = prev_frame  # set previous frame in pos 1
+        self.state_array[0] = new_frame  # set current frame in pos 0
 
         # subtract the previous frame from the current one so we are only processing on changes in the game
-        if 0 not in self.array_2d[1]:
-            state = self.array_2d[0] - self.array_2d[1]
+        # (direction of the ball)
+        if 0 not in self.state_array[1]:
+            state = self.state_array[0] - self.state_array[1]
             return state
 
     def view(self):
@@ -225,7 +216,5 @@ class PongPygame:
         self.screen.blit(score_right, (525, 10))  # right score
 
         self.paddle_b.animate()
-
-        self.observe()
 
         pygame.display.update()

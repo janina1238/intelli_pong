@@ -1,7 +1,7 @@
 import gym
 from gym import spaces
-import pygame
 from gym_pong.envs.pong_pygame import PongPygame
+
 
 class PygameEnv(gym.Env):
 
@@ -17,8 +17,8 @@ class PygameEnv(gym.Env):
 
     def step(self, action):
         self.ponggame.action(action)
-        reward = self.ponggame.reward()
         obs = self.ponggame.observe()
+        reward = self.ponggame.reward()
         done = self.ponggame.is_done()
         return obs, reward, done, {}
 
