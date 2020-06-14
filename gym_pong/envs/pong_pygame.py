@@ -22,7 +22,7 @@ class Paddle:
 
         self._render = _render  # surface
         self.velocity = 10
-        self.direction = 'Up'  # just for the animation of the right paddle
+        self.direction = 'Up'  # only used for the right paddle animation
 
     def draw(self):
         """
@@ -50,7 +50,7 @@ class Paddle:
 
     def update(self):
         """
-        Update the position of the paddle if it hits the window of the field
+        Update the position of the paddle if it reaches the border
         """
         if self.y < 55:
             self.y = 55
@@ -79,7 +79,7 @@ class Ball:
 
         self.scoreA = 0  # left paddle score
         self.scoreB = 0  # right paddle score
-        self.reward_flag = 0  # changes when one player get a point
+        self.reward_flag = 0  # changes if a player gets a point
 
     def draw(self):
         """
@@ -92,8 +92,8 @@ class Ball:
     def update(self):
         """
         Update the position of the ball in every frame.
-        Check if the ball is bouncing against any of the 4 walls.
-        Switch direction if it do and update score.
+        Check if the ball collides with any of the 4 walls.
+        Switch direction if it does and update score.
         """
         self.x += self.dx
         self.y += self.dy
@@ -147,7 +147,7 @@ class PongPygame:
     def action(self, action):
         """
         action:
-            a choice how to move (up, down, don't move)
+            move up, move down, don't move
         """
         if action == 0:
             self.paddle_a.y -= self.paddle_a.velocity  # move up

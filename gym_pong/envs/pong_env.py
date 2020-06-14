@@ -26,7 +26,7 @@ class PygameEnv(gym.Env):
         """
         Apply the action.
         action:
-            a choice how to move (up, down, don't move)
+            move up, move down, don't move
         return:
             the current state/ reward and if the episode is done
         """
