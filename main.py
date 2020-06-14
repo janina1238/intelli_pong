@@ -1,5 +1,5 @@
 import gym
-
+import gym_pong
 
 env = gym.make('PyGamePong-v0')
 done = False
