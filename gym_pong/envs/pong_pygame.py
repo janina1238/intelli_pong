@@ -22,15 +22,20 @@ class Paddle:
 
         self._render = _render  # surface
         self.velocity = 10
-        self.direction = 'Up'
+        self.direction = 'Up'  # just for the animation of the right paddle
 
-    # draw a paddle
     def draw(self):
+        """
+        return:
+            a rect shaped paddle
+        """
         rect = pygame.draw.rect(self._render, WHITE, pygame.Rect(self.x, self.y, self.width, self.height))
         return rect
 
-    # animate the right paddle!!
     def animate(self):
+        """
+        Animate the right paddle
+        """
         if self.y < 55:
             self.direction = 'Down'
 
@@ -43,10 +48,10 @@ class Paddle:
         elif self.direction == 'Up':
             self.y -= self.velocity
 
-        self.draw()
-
     def update(self):
-        # check position
+        """
+        Update the position of the paddle if it hits the window of the field
+        """
         if self.y < 55:
             self.y = 55
         elif self.y > 500 - self.height:
@@ -67,26 +72,32 @@ class Ball:
         self.height = self.size[1]  # height of the ball
 
         self._render = _render  # surface
-        self.velocity = randint(4, 8)  # set a random velocity at the beginning from the iteration
+        self.velocity = randint(4, 8)  # set a random velocity at the beginning of every episode
 
         self.direction = choice([-self.velocity, self.velocity]), choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
 
         self.scoreA = 0  # left paddle score
         self.scoreB = 0  # right paddle score
-        self.reward_flag = 0
+        self.reward_flag = 0  # changes when one player get a point
 
-    # draw ball
     def draw(self):
+        """
+        return:
+            a rect shaped ball
+        """
         rect = pygame.draw.rect(self._render, WHITE, pygame.Rect(self.x, self.y, self.width, self.height))
         return rect
 
     def update(self):
+        """
+        Update the position of the ball in every frame.
+        Check if the ball is bouncing against any of the 4 walls.
+        Switch direction if it do and update score.
+        """
         self.x += self.dx
         self.y += self.dy
 
-        # Check if the ball is bouncing against any of the 4 walls
-        # switch direction if they do and update score
         if self.y < 55:
             self.dy *= -1
         elif self.y > 500 - self.height:
@@ -95,14 +106,19 @@ class Ball:
             self.scoreA += 1
             self.reward_flag = 1
             self.dx *= -1
-        elif self.x < 25 - self.width:
+        elif self.x < 0:
             self.scoreB += 1
             self.reward_flag = 2
             self.dx *= -1
-        print(self.dx, self.dy)
 
     def check_collision(self, paddle_a, paddle_b):
-        # switch direction when ball collides with paddle
+        """
+        Check if the ball collides with one of the paddles and change the direction
+        paddle_a:
+            left paddle to check collision
+        paddle_b:
+            right paddle to check collision
+        """
         if self.draw().colliderect(paddle_a.draw()):
             self.dx = self.velocity
         if self.draw().colliderect(paddle_b.draw()):
@@ -117,19 +133,22 @@ class PongPygame:
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.w, self.h))  # initialize the screen
-        self.clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()  # to control how fast the screen updates
 
         self.paddle_a = Paddle((20, 200), (10, 100), self.screen)  # first paddle object
         self.paddle_b = Paddle((670, 200), (10, 100), self.screen)  # second paddle object
 
         self.ball = Ball((337.5, randint(100, 400)), (25, 25), self.screen)  # ball object
 
-        self.fontObj = pygame.font.Font('freesansbold.ttf', 32)  # set score
+        self.fontObj = pygame.font.Font('freesansbold.ttf', 32)  # set score font
 
         self.state_array = np.zeros([2, 2])
 
-    # set action for the left paddle
     def action(self, action):
+        """
+        action:
+            a choice how to move (up, down, don't move)
+        """
         if action == 0:
             self.paddle_a.y -= self.paddle_a.velocity  # move up
         if action == 1:
@@ -140,8 +159,11 @@ class PongPygame:
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
 
-    # amount of reward achieved by the previous actions
     def reward(self):
+        """
+        return:
+            Reward if one player gets a point
+        """
         reward = 0
         # point for the agent -> reward +1
         if self.ball.reward_flag == 1:
@@ -156,14 +178,20 @@ class PongPygame:
         return reward
 
     def is_done(self):
+        """
+        return:
+            True if a player reaches 10 points
+        """
         done = False
-        # if one of the players reach 10 points
         if self.ball.scoreA == 10 or self.ball.scoreB == 10:
             done = True
-        #print(done)
         return done
 
     def observe(self):
+        """
+        return:
+            state of the ball (direction) if prev_frame is not 0
+        """
         x = self.ball.x
         y = self.ball.y
 
@@ -173,14 +201,15 @@ class PongPygame:
         self.state_array[0] = new_frame  # set current frame in pos 0
 
         # subtract the previous frame from the current one so we are only processing on changes in the game
-        # (direction of the ball)
         if 0 not in self.state_array[1]:
             state = self.state_array[0] - self.state_array[1]
             return state
 
     def view(self):
-        # draw game
-        self.clock.tick(FPS)
+        """
+        Draw the game
+        """
+        self.clock.tick(FPS)  # Limit to 60 frames per second
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
