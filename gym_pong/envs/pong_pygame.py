@@ -72,8 +72,8 @@ class Ball:
         self.direction = random.choice([-self.velocity, self.velocity]), random.choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
 
-        self.scoreA = 0
-        self.scoreB = 0
+        self.scoreA = 0  # left paddle score
+        self.scoreB = 0  # right paddle score
         self.reward_flag = 0
 
     # draw ball
