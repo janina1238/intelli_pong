@@ -67,7 +67,7 @@ class Ball:
         self.height = self.size[1]  # height of the ball
 
         self._render = _render  # surface
-        self.velocity = randint(4, 8)
+        self.velocity = randint(4, 8)  # speed
 
         self.direction = random.choice([-self.velocity, self.velocity]), random.choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
@@ -86,7 +86,8 @@ class Ball:
         self.rect.x += self.dx
         self.rect.y += self.dy
 
-        # Check if the ball is bouncing against any of the 4 walls:
+        # Check if the ball is bouncing against any of the 4 walls
+        # switch direction if they do and update score
         if self.rect.y < 55:
             self.dy *= -1
         elif self.rect.y > 500 - self.height:
@@ -101,7 +102,7 @@ class Ball:
             self.dx *= -1
 
     def check_collision(self, paddle_a, paddle_b):
-        # If ball bounces of paddle
+        # switch direction when ball collides with paddle
         if self.rect.colliderect(paddle_a.draw()):
             self.dx = self.velocity
         if self.rect.colliderect(paddle_b.draw()):
@@ -139,6 +140,7 @@ class PongPygame:
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
 
+    # amount of reward achieved by the previous action
     def reward(self):
         reward = 0
         # point for the agent -> reward +1

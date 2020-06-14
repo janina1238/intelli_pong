@@ -14,6 +14,7 @@ for t in range(5000):
     obs, r, done, _ = env.step(action)
     episode_reward += r
 
+    # if the episode is terminated reset the environment to initial state
     if done:
         total_reward += episode_reward
         print("episode ", episode_reward)
