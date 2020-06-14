@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
-import random
 from random import randint
+from random import choice
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -69,7 +69,7 @@ class Ball:
         self._render = _render  # surface
         self.velocity = randint(4, 8)  # set a random velocity at the beginning from the iteration
 
-        self.direction = random.choice([-self.velocity, self.velocity]), random.choice([-self.velocity, self.velocity])
+        self.direction = choice([-self.velocity, self.velocity]), choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
 
         self.scoreA = 0  # left paddle score
@@ -99,6 +99,7 @@ class Ball:
             self.scoreB += 1
             self.reward_flag = 2
             self.dx *= -1
+        print(self.dx, self.dy)
 
     def check_collision(self, paddle_a, paddle_b):
         # switch direction when ball collides with paddle
@@ -121,7 +122,7 @@ class PongPygame:
         self.paddle_a = Paddle((20, 200), (10, 100), self.screen)  # first paddle object
         self.paddle_b = Paddle((670, 200), (10, 100), self.screen)  # second paddle object
 
-        self.ball = Ball((337.5, random.randint(100, 400)), (25, 25), self.screen)  # ball object
+        self.ball = Ball((337.5, randint(100, 400)), (25, 25), self.screen)  # ball object
 
         self.fontObj = pygame.font.Font('freesansbold.ttf', 32)  # set score
 
