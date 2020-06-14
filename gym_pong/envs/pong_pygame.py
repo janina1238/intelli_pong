@@ -162,7 +162,7 @@ class PongPygame:
     def reward(self):
         """
         return:
-            Reward if one player gets a point
+            reward if one player gets a point
         """
         reward = 0
         # point for the agent -> reward +1
@@ -180,7 +180,7 @@ class PongPygame:
     def is_done(self):
         """
         return:
-            True if a player reaches 10 points
+            true if a player reaches 10 points
         """
         done = False
         if self.ball.scoreA == 10 or self.ball.scoreB == 10:
