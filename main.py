@@ -16,7 +16,7 @@ for t in range(10000):
     # if the episode is terminated reset the environment to initial state
     if done:
         total_reward += episode_reward
-        print("episode ", episode_reward)
+        print("episode_reward: ", episode_reward)
         episode_reward = 0
         initial_state = env.reset()
 
