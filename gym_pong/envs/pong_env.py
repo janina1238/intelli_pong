@@ -1,4 +1,5 @@
 import gym
+import numpy as np
 from gym import spaces
 from gym_pong.envs.pong_pygame import PongPygame
 
@@ -7,7 +8,8 @@ class PygameEnv(gym.Env):
 
     def __init__(self):
         self.ponggame = PongPygame()
-        self.action_space = spaces.Discrete(3)
+        self.action_space = spaces.Discrete(3)  # three actions -> move up, move down, don't move
+        self.observation_space = spaces.Box(low=np.array([-8., -8.]), high=np.array([8., 8.]), dtype=np.float64)  # Box(2,)
 
     # reset the game
     def reset(self):

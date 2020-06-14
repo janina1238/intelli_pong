@@ -67,12 +67,10 @@ class Ball:
         self.height = self.size[1]  # height of the ball
 
         self._render = _render  # surface
-        self.velocity = randint(4, 8)
+        self.velocity = randint(4, 8)  # set a random velocity at the beginning from the iteration
 
         self.direction = choice([-self.velocity, self.velocity]), choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
-
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         self.scoreA = 0
         self.scoreB = 0
@@ -80,24 +78,24 @@ class Ball:
 
     # draw ball
     def draw(self):
-        rect = pygame.draw.rect(self._render, WHITE, self.rect)
+        rect = pygame.draw.rect(self._render, WHITE, pygame.Rect(self.x, self.y, self.width, self.height))
         return rect
 
     def update(self):
-        self.rect.x += self.dx
-        self.rect.y += self.dy
+        self.x += self.dx
+        self.y += self.dy
 
         # Check if the ball is bouncing against any of the 4 walls
         # switch direction if they do and update score
-        if self.rect.y < 55:
+        if self.y < 55:
             self.dy *= -1
-        elif self.rect.y > 500 - self.height:
+        elif self.y > 500 - self.height:
             self.dy *= -1
-        elif self.rect.x > 700 - self.width:
+        elif self.x > 700 - self.width:
             self.scoreA += 1
             self.reward_flag = 1
             self.dx *= -1
-        elif self.rect.x < 25 - self.width:
+        elif self.x < 25 - self.width:
             self.scoreB += 1
             self.reward_flag = 2
             self.dx *= -1
@@ -105,9 +103,9 @@ class Ball:
 
     def check_collision(self, paddle_a, paddle_b):
         # switch direction when ball collides with paddle
-        if self.rect.colliderect(paddle_a.draw()):
+        if self.draw().colliderect(paddle_a.draw()):
             self.dx = self.velocity
-        if self.rect.colliderect(paddle_b.draw()):
+        if self.draw().colliderect(paddle_b.draw()):
             self.dx = -self.velocity
 
 
@@ -162,11 +160,12 @@ class PongPygame:
         # if one of the players reach 10 points
         if self.ball.scoreA == 10 or self.ball.scoreB == 10:
             done = True
+        #print(done)
         return done
 
     def observe(self):
-        x = self.ball.rect.x
-        y = self.ball.rect.y
+        x = self.ball.x
+        y = self.ball.y
 
         new_frame = [x, y]  # set the current x and y position of the ball
         prev_frame = self.state_array[0]  # move the current frame to previous frame
@@ -187,16 +186,8 @@ class PongPygame:
             if event.type == pygame.QUIT:
                 quit()
             elif event.type == pygame.KEYDOWN:
-                '''
-                if event.key == pygame.K_w:
-                    self.paddle_a.rect.move_ip(0, -4)
-                if event.key == pygame.K_s:
-                    self.paddle_a.rect.move_ip(0, 4)
-                '''
-                if event.key == pygame.K_UP:
-                    self.paddle_b.rect.move_ip(0, -4)
-                if event.key == pygame.K_DOWN:
-                    self.paddle_b.rect.move_ip(0, 4)
+                if event.key == pygame.K_x:
+                    quit()
 
         self.screen.fill(BLACK)  # reset the latest frame
 
