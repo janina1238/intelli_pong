@@ -67,7 +67,7 @@ class Ball:
         self.height = self.size[1]  # height of the ball
 
         self._render = _render  # surface
-        self.velocity = randint(4, 8)  # speed
+        self.velocity = randint(4, 8)
 
         self.direction = random.choice([-self.velocity, self.velocity]), random.choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
@@ -140,7 +140,7 @@ class PongPygame:
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
 
-    # amount of reward achieved by the previous action
+    # amount of reward achieved by the previous actions
     def reward(self):
         reward = 0
         # point for the agent -> reward +1
