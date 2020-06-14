@@ -19,5 +19,6 @@ for t in range(10000):
         print("episode ", episode_reward)
         initial_state = env.reset()
 
+# total reward of all episodes
 print("total_reward: ", total_reward)
 env.close()
