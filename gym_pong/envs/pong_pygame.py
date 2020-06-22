@@ -2,6 +2,8 @@ import numpy as np
 import pygame
 from random import randint
 from random import choice
+from random import uniform
+import math
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -77,6 +79,8 @@ class Ball:
         self.direction = choice([-self.velocity, self.velocity]), choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction
 
+        self.c = math.sqrt(self.dx**2 + self.dy**2)
+
         self.scoreA = 0  # left paddle score
         self.scoreB = 0  # right paddle score
         self.reward_flag = 0  # changes if a player gets a point
@@ -94,6 +98,8 @@ class Ball:
         Update the position of the ball in every frame.
         Check if the ball collides with any of the 4 walls.
         Switch direction if it does and update score.
+        For a varying angle, slightly change the dx value.
+        Then correct the dy value, so the velocity stays the same.
         """
         self.x += self.dx
         self.y += self.dy
@@ -105,24 +111,47 @@ class Ball:
         elif self.x > 700 - self.width:
             self.scoreA += 1
             self.reward_flag = 1
-            self.dx *= -1
+            self.dx = -(self.velocity + uniform(-1.0, 1.0))
+            # if the ball comes from underneath, go up
+            if self.dy < 0:
+                self.dy = math.sqrt(self.c**2 - self.dx**2) * -1
+            # if the ball comes from above, go down
+            else:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
         elif self.x < 0:
             self.scoreB += 1
             self.reward_flag = 2
-            self.dx *= -1
+            self.dx = (self.velocity + uniform(-1.0, 1.0))
+            # if the ball comes from underneath, go up
+            if self.dy < 0:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
+            # if the ball comes from above, go down
+            else:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
 
     def check_collision(self, paddle_a, paddle_b):
         """
-        Check if the ball collides with one of the paddles and change the direction
+        Check if the ball collides with one of the paddles and change the direction.
+        For a varying angle, slightly change the dx value.
+        Then correct the dy value, so the velocity stays the same.
         paddle_a:
             left paddle to check collision
         paddle_b:
             right paddle to check collision
         """
         if self.draw().colliderect(paddle_a.draw()):
-            self.dx = self.velocity
+            self.dx = (self.velocity + uniform(-1.0, 1.0))
+            if self.dy < 0:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
+            else:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
+
         if self.draw().colliderect(paddle_b.draw()):
-            self.dx = -self.velocity
+            self.dx = -(self.velocity + uniform(-1.0, 1.0))
+            if self.dy < 0:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
+            else:
+                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
 
 
 class PongPygame:
