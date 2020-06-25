@@ -9,7 +9,7 @@ class PygameEnv(gym.Env):
     def __init__(self):
         self.ponggame = PongPygame()
         self.action_space = spaces.Discrete(3)  # three actions -> move up, move down, don't move
-        self.observation_space = spaces.Box(low=np.array([-8., -8.]), high=np.array([8., 8.]), dtype=np.float64) # Box(2,)
+        self.observation_space = spaces.Box(low=np.array([-9.5, -9.5]), high=np.array([9.5, 9.5]), dtype=np.float64) # Box(2,)
 
     def reset(self):
         """

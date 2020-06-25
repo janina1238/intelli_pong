@@ -111,8 +111,8 @@ class Ball:
         elif self.x > 700 - self.width:
             self.scoreA += 1
             self.reward_flag = 1
-            self.dx = -(self.velocity + uniform(-1.0, 1.0))
-            # if the ball comes from underneath, go up
+            self.dx = -(self.velocity + uniform(-1.5, 1.5))
+            # if the ball comes from below, go up
             if self.dy < 0:
                 self.dy = math.sqrt(self.c**2 - self.dx**2) * -1
             # if the ball comes from above, go down
@@ -121,8 +121,8 @@ class Ball:
         elif self.x < 0:
             self.scoreB += 1
             self.reward_flag = 2
-            self.dx = (self.velocity + uniform(-1.0, 1.0))
-            # if the ball comes from underneath, go up
+            self.dx = (self.velocity + uniform(-1.5, 1.5))
+            # if the ball comes from below, go up
             if self.dy < 0:
                 self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
             # if the ball comes from above, go down
@@ -223,6 +223,7 @@ class PongPygame:
         """
         x = self.ball.x
         y = self.ball.y
+        state = np.zeros([2])
 
         new_frame = [x, y]  # set the current x and y position of the ball
         prev_frame = self.state_array[0]  # move the current frame to previous frame
@@ -232,7 +233,7 @@ class PongPygame:
         # subtract the previous frame from the current one so we are only processing on changes in the game
         if 0 not in self.state_array[1]:
             state = self.state_array[0] - self.state_array[1]
-            return state
+        return state
 
     def view(self):
         """
@@ -269,5 +270,8 @@ class PongPygame:
         self.screen.blit(score_right, (525, 10))  # right score
 
         self.paddle_b.animate()
+
+        #print(self.observe())
+        # print(self.observe())
 
         pygame.display.update()
