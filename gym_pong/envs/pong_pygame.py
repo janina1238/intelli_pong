@@ -171,7 +171,10 @@ class PongPygame:
 
         self.fontObj = pygame.font.Font('freesansbold.ttf', 32)  # set score font
 
-        self.state_array = np.zeros([2, 2])
+        self.ball_array = np.zeros([2, 2])
+        self.paddle_array = np.zeros([2, 2])
+
+        self.sum_reward = 0
 
     def action(self, action):
         """
@@ -196,12 +199,12 @@ class PongPygame:
         reward = 0
         # point for the agent -> reward +1
         if self.ball.reward_flag == 1:
-            reward = 1
+            reward += 1
             self.ball.reward_flag = 0
             return reward
         # point for the enemy -> reward -1
         if self.ball.reward_flag == 2:
-            reward = -1
+            reward -= 1
             self.ball.reward_flag = 0
             return reward
         return reward
@@ -221,18 +224,18 @@ class PongPygame:
         return:
             state of the ball (direction) if prev_frame is not 0
         """
-        x = self.ball.x
-        y = self.ball.y
+        ball_x = self.ball.x
+        ball_y = self.ball.y
         state = np.zeros([2])
 
-        new_frame = [x, y]  # set the current x and y position of the ball
-        prev_frame = self.state_array[0]  # move the current frame to previous frame
-        self.state_array[1] = prev_frame  # set previous frame in pos 1
-        self.state_array[0] = new_frame  # set current frame in pos 0
+        ball_new_frame = [ball_x, ball_y]  # set the current x and y position of the ball
+        ball_prev_frame = self.ball_array[0]  # move the current frame to previous frame
+        self.ball_array[1] = ball_prev_frame  # set previous frame in pos 1
+        self.ball_array[0] = ball_new_frame  # set current frame in pos 0
 
         # subtract the previous frame from the current one so we are only processing on changes in the game
-        if 0 not in self.state_array[1]:
-            state = self.state_array[0] - self.state_array[1]
+        if 0 not in self.ball_array[1]:
+            state = self.ball_array[0] - self.ball_array[1]
         return state
 
     def view(self):
