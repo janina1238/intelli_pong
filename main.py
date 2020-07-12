@@ -1,5 +1,3 @@
-import os
-
 import gym
 import gym_pong
 from stable_baselines.common.env_checker import check_env
