@@ -15,6 +15,6 @@ Wenn die Iteration beendet ist, wird ein gesamter Reward aller Spielrunden zurü
 Beide Agenten wurden mit dem Stable Baselines Framework trainiert.
 Der rechte Paddle wurde mit dem PPO2 Algorithmus trainiert und musste gegen den animierten linken Paddle spielen.
 Der linke Paddle wurde mit dem A2C Algorithmus trainiert und musste wiederum gegen das PPO2 Model spielen.
-Da das Framework nach explizieten OpenAI Gym Methoden-Namen sucht (z.B. step()),
+Da das Framework nach expliziten OpenAI Gym Standard-Meethoden sucht (z.B. step()),
 musste der erste Agent auf Replikate der Standard-Methoden verschoben werden (z.B. step_enemy()).
-So kann der zweite Agent auf den Standard-Methoden trainiert werden und gegen das PPO2 Model spielen.
+So kann der zweite Agent anhand Standard-Methoden trainiert werden und gegen das PPO2 Model spielen.
