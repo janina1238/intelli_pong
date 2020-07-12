@@ -14,7 +14,6 @@ Training from the left paddle with the A2C Algorithm
 '''
 model = A2C(MlpPolicy, env, verbose=1, n_steps=32, ent_coef=0.0, vf_coef=0.5)  # instantiate the agent
 model.learn(total_timesteps=int(2e6))  # training
-#model.save("ppo2_2e6_rightagent-vel20_randomballXY_20_nsteps2048.zip")
 model.save("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")
 '''
 model_left = A2C.load("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")  # load trained agent
