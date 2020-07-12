@@ -3,8 +3,6 @@ import os
 import gym
 import gym_pong
 from stable_baselines.common.env_checker import check_env
-from stable_baselines.common import make_vec_env
-from stable_baselines.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines import A2C, PPO2
 from stable_baselines.common.policies import MlpPolicy
 
