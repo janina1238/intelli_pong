@@ -23,7 +23,57 @@ class Paddle:
         self.height = self.size[1]  # height of the paddle
 
         self._render = _render  # surface
-        self.velocity = 10
+        self.velocity = 20
+        self.direction = 'Up'  # only used for the right paddle animation
+
+    def draw(self):
+        """
+        return:
+            a rect shaped paddle
+        """
+        rect = pygame.draw.rect(self._render, WHITE, pygame.Rect(self.x, self.y, self.width, self.height))
+        return rect
+
+    def animate(self):
+        """
+        Animate the right paddle
+        """
+        if self.y < 55:
+            self.direction = 'Down'
+
+        elif self.y > 400:
+            self.direction = 'Up'
+
+        if self.direction == 'Down':
+            self.y += self.velocity
+
+        elif self.direction == 'Up':
+            self.y -= self.velocity
+
+    def update(self):
+        """
+        Update the position of the paddle if it reaches the border
+        """
+        if self.y < 55:
+            self.y = 55
+        elif self.y > 500 - self.height:
+            self.y = 500 - self.height
+
+
+class PaddleEnemy:
+
+    def __init__(self, pos, size, _render=None):
+        self.pos = pos  # position of the paddle on the x and y axes
+        self.size = size  # size of the paddle, width and height
+
+        self.x = self.pos[0]  # position of the paddle on the x axis
+        self.y = self.pos[1]  # position of the paddle on the y axis
+
+        self.width = self.size[0]  # width of the paddle
+        self.height = self.size[1]  # height of the paddle
+
+        self._render = _render  # surface
+        self.velocity = 20
         self.direction = 'Up'  # only used for the right paddle animation
 
     def draw(self):
@@ -84,6 +134,7 @@ class Ball:
         self.scoreA = 0  # left paddle score
         self.scoreB = 0  # right paddle score
         self.reward_flag = 0  # changes if a player gets a point
+        self.reward_flag_enemy = 0
 
     def draw(self):
         """
@@ -103,6 +154,9 @@ class Ball:
         """
         self.x += self.dx
         self.y += self.dy
+        rand_x = 700 / 2  # choice([(700 / 2), (700 - self.width)])  # (700-30)])
+        rand_y = choice([55, 305, (500 - self.height)])
+        rand_dx = choice([-(self.velocity + uniform(-1.5, 1.5)), (self.velocity + uniform(-1.5, 1.5))])
 
         if self.y < 55:
             self.dy *= -1
@@ -111,23 +165,17 @@ class Ball:
         elif self.x > 700 - self.width:
             self.scoreA += 1
             self.reward_flag = 1
-            self.dx = -(self.velocity + uniform(-1.5, 1.5))
-            # if the ball comes from below, go up
-            if self.dy < 0:
-                self.dy = math.sqrt(self.c**2 - self.dx**2) * -1
-            # if the ball comes from above, go down
-            else:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
+            self.reward_flag_enemy = 2
+            self.x = rand_x
+            self.y = rand_y
+            self.dx = rand_dx
         elif self.x < 0:
             self.scoreB += 1
             self.reward_flag = 2
-            self.dx = (self.velocity + uniform(-1.5, 1.5))
-            # if the ball comes from below, go up
-            if self.dy < 0:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
-            # if the ball comes from above, go down
-            else:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
+            self.reward_flag_enemy = 1
+            self.x = rand_x
+            self.y = rand_y
+            self.dx = rand_dx
 
     def check_collision(self, paddle_a, paddle_b):
         """
@@ -140,18 +188,18 @@ class Ball:
             right paddle to check collision
         """
         if self.draw().colliderect(paddle_a.draw()):
-            self.dx = (self.velocity + uniform(-1.0, 1.0))
+            self.dx = (self.velocity + uniform(-1.5, 1.5))
             if self.dy < 0:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
+                self.dy = math.sqrt(self.c ** 2 - self.dy ** 2) * -1
             else:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
+                self.dy = math.sqrt(self.c ** 2 - self.dy ** 2)
 
         if self.draw().colliderect(paddle_b.draw()):
-            self.dx = -(self.velocity + uniform(-1.0, 1.0))
+            self.dx = -(self.velocity + uniform(-1.5, 1.5))
             if self.dy < 0:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2) * -1
+                self.dy = math.sqrt(self.c ** 2 - self.dy ** 2) * -1
             else:
-                self.dy = math.sqrt(self.c ** 2 - self.dx ** 2)
+                self.dy = math.sqrt(self.c ** 2 - self.dy ** 2)
 
 
 class PongPygame:
@@ -187,9 +235,24 @@ class PongPygame:
             self.paddle_a.y += self.paddle_a.velocity  # move down
         # action == 2, don't move
 
-        self.ball.update()
         self.paddle_a.update()
         self.ball.check_collision(self.paddle_a, self.paddle_b)
+        self.ball.update()
+
+    def action_enemy(self, action):
+        """
+        action:
+            move up, move down, don't move
+        """
+        if action == 0:
+            self.paddle_b.y -= self.paddle_b.velocity  # move up
+        if action == 1:
+            self.paddle_b.y += self.paddle_b.velocity  # move down
+        # action == 2, don't move
+
+        self.paddle_b.update()
+        self.ball.check_collision(self.paddle_a, self.paddle_b)
+        #self.ball.update()
 
     def reward(self):
         """
@@ -209,6 +272,24 @@ class PongPygame:
             return reward
         return reward
 
+    def reward_enemy(self):
+        """
+        return:
+            reward if one player gets a point
+        """
+        reward = 0
+        # point for the agent -> reward +1
+        if self.ball.reward_flag_enemy == 1:
+            reward += 1
+            self.ball.reward_flag_enemy = 0
+            return reward
+        # point for the enemy -> reward -1
+        if self.ball.reward_flag_enemy == 2:
+            reward -= 1
+            self.ball.reward_flag_enemy = 0
+            return reward
+        return reward
+
     def is_done(self):
         """
         return:
@@ -217,6 +298,20 @@ class PongPygame:
         done = False
         if self.ball.scoreA == 10 or self.ball.scoreB == 10:
             done = True
+            self.ball.dx = -(self.ball.velocity + uniform(-1.5, 1.5))
+            print("ScoreA: " + str(self.ball.scoreA))
+        return done
+
+    def is_done_enemy(self):
+        """
+        return:
+            true if a player reaches 10 points
+        """
+        done = False
+        if self.ball.scoreA == 10 or self.ball.scoreB == 10:
+            done = True
+            self.ball.dx = -(self.ball.velocity + uniform(-1.5, 1.5))
+            print("ScoreB: " + str(self.ball.scoreB))
         return done
 
     def observe(self):
@@ -226,16 +321,31 @@ class PongPygame:
         """
         ball_x = self.ball.x
         ball_y = self.ball.y
-        state = np.zeros([2])
+        paddle_x = self.paddle_a.x
+        paddle_y = self.paddle_a.y
+        state = np.zeros([4])
 
-        ball_new_frame = [ball_x, ball_y]  # set the current x and y position of the ball
-        ball_prev_frame = self.ball_array[0]  # move the current frame to previous frame
-        self.ball_array[1] = ball_prev_frame  # set previous frame in pos 1
-        self.ball_array[0] = ball_new_frame  # set current frame in pos 0
+        state[0] = ball_x
+        state[1] = ball_y
+        state[2] = paddle_x
+        state[3] = paddle_y
+        return state
 
-        # subtract the previous frame from the current one so we are only processing on changes in the game
-        if 0 not in self.ball_array[1]:
-            state = self.ball_array[0] - self.ball_array[1]
+    def observe_enemy(self):
+        """
+        return:
+            state of the ball (direction) if prev_frame is not 0
+        """
+        ball_x = self.ball.x
+        ball_y = self.ball.y
+        paddle_x = self.paddle_b.x
+        paddle_y = self.paddle_b.y
+        state = np.zeros([4])
+
+        state[0] = ball_x
+        state[1] = ball_y
+        state[2] = paddle_x
+        state[3] = paddle_y
         return state
 
     def view(self):
@@ -271,10 +381,5 @@ class PongPygame:
         # display score
         self.screen.blit(score_left, (170, 10))  # left score
         self.screen.blit(score_right, (525, 10))  # right score
-
-        self.paddle_b.animate()
-
-        #print(self.observe())
-        # print(self.observe())
 
         pygame.display.update()
