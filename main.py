@@ -10,7 +10,7 @@ from stable_baselines.common.policies import MlpPolicy
 
 env = gym.make('PyGamePong-v0')
 
-#check_env(env)
+check_env(env)
 
 """
 Training from the left paddle with the A2C Algorithm
