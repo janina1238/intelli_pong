@@ -9,7 +9,7 @@ env = gym.make('PyGamePong-v0')
 check_env(env)
 
 """
-Training from the left paddle with the A2C Algorithm
+Training from the left paddle with the A2C Algorithm vs. PPO2 Model
 """
 '''
 model = A2C(MlpPolicy, env, verbose=1, n_steps=32, ent_coef=0.0, vf_coef=0.5)  # instantiate the agent
@@ -19,7 +19,7 @@ model.save("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05
 model_left = A2C.load("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")  # load trained agent
 
 """
-Training from the right paddle with the PPO2 Algorithm
+Training from the right paddle with the PPO2 Algorithm vs. animated paddle
 """
 '''
 model = PPO2(MlpPolicy, env, verbose=1, n_steps=2048)  # instantiate the agent
