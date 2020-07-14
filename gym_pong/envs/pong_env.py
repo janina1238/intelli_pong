@@ -3,6 +3,7 @@ import numpy as np
 from gym import spaces
 from gym_pong.envs.pong_pygame import PongPygame
 
+
 class PygameEnv(gym.Env):
 
     def __init__(self):

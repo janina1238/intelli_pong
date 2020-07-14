@@ -66,7 +66,12 @@ for t in range(25000):
         obs = env.reset()
         obs_e = env.reset_enemy()
 
-# total reward of all episodes
-print("total_reward_paddle_left: ", total_reward)
-print("total_reward_paddle_right: ", total_reward_enemy)
+# if none of the agents get 10 points before the iteration has run through print the current reward
+if total_reward == 0 and total_reward_enemy == 0:
+    print("episode_reward_paddle_a: ", episode_reward)
+    print("episode_reward_paddle_b: ", episode_reward_enemy)
+else:
+    # total reward of all episodes
+    print("total_reward_paddle_left: ", total_reward)
+    print("total_reward_paddle_right: ", total_reward_enemy)
 env.close()
