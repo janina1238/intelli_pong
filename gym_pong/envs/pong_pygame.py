@@ -124,7 +124,7 @@ class Ball:
         self.height = self.size[1]  # height of the ball
 
         self._render = _render  # surface
-        self.velocity = randint(4, 8)  # set a random velocity at the beginning of every episode
+        self.velocity = 7 # randint(4, 8)  # set a random velocity at the beginning of every episode
 
         self.direction = choice([-self.velocity, self.velocity]), choice([-self.velocity, self.velocity])
         self.dx, self.dy = self.direction

@@ -1,11 +1,11 @@
 import gym
 import gym_pong
 from stable_baselines.common.env_checker import check_env
-from stable_baselines import A2C, PPO2
+from stable_baselines import A2C, PPO2, DQN
 from stable_baselines.common.policies import MlpPolicy
+#from stable_baselines.deepq.policies import MlpPolicy
 
 env = gym.make('PyGamePong-v0')
-
 check_env(env)
 
 """
@@ -16,7 +16,13 @@ model = A2C(MlpPolicy, env, verbose=1, n_steps=32, ent_coef=0.0, vf_coef=0.5)  #
 model.learn(total_timesteps=int(2e6))  # training
 model.save("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")
 '''
-model_left = A2C.load("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")  # load trained agent
+'''
+model_left = PPO2(MlpPolicy, env, verbose=1, n_steps=2048)  # instantiate the agent
+model_left.learn(total_timesteps=int(2e6))  # training
+model_left.save("ppo2_2e6_rightagent-vel20_randomballXY_20_nsteps2048-n_cpu_tf_sess1.zip")  # save the agent
+'''
+#model_left = A2C.load("a2c_2e6_leftagent-vel20_randomballXY_20_nsteps32_ent_coef0_vf_coef05_enemymodel.zip")  # load trained agent
+model_left = PPO2.load("ppo2_2e6_rightagent-vel20_randomballXY_20_nsteps2048-n_cpu_tf_sess1.zip")
 
 """
 Training from the right paddle with the PPO2 Algorithm vs. animated paddle
